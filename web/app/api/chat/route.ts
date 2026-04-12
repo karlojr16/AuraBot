@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { db } from '@/lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
@@ -52,7 +53,7 @@ export async function POST(req: Request): Promise<Response> {
     const result = await model.generateContent(message);
     const text = result.response.text();
 
-    await db.collection('chats').add({
+    await addDoc(collection(db, 'chats'), {
       message,
       reply: text,
       createdAt: new Date(),
