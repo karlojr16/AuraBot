@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function HomePage() {
   const [step, setStep] = useState(1);
@@ -12,6 +13,9 @@ export default function HomePage() {
       {/* Header */}
       <nav className="p-4 bg-white border-b shadow-sm flex justify-between items-center">
         <h1 className="text-xl font-bold text-orange-600">🤖 AuraBot</h1>
+        <Link href="/login" className="px-4 py-2 bg-orange-600 text-white font-medium text-sm rounded-lg hover:bg-orange-700 transition-colors">
+          Iniciar Sesión
+        </Link>
       </nav>
 
       <main className="max-w-5xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">

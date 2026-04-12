@@ -2,9 +2,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../../lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginPage() {
+    const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -17,11 +18,16 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
-            console.log("Login successful!");
-            router.push("/"); // Redirect to home or dashboard after login
+            if (isLogin) {
+                await signInWithEmailAndPassword(auth, email, password);
+                console.log("Login successful!");
+            } else {
+                await createUserWithEmailAndPassword(auth, email, password);
+                console.log("Registration successful!");
+            }
+            router.push("/dashboard"); // Redirect to dashboard
         } catch (error) {
-            console.error("Login failed:", error.message);
+            console.error("Authentication failed:", error.message);
             setError(error.message);
         } finally {
             setLoading(false);
@@ -36,7 +42,9 @@ export default function LoginPage() {
                     <h1 className="text-5xl font-black text-orange-600 tracking-tighter mb-2">
                         AuraBot
                     </h1>
-                    <p className="text-gray-400 text-sm font-medium">Inicia sesión para continuar</p>
+                    <p className="text-gray-400 text-sm font-medium">
+                        {isLogin ? "Inicia sesión para continuar" : "Crea tu cuenta"}
+                    </p>
                 </div>
 
                 {/* Login Card */}
@@ -91,13 +99,22 @@ export default function LoginPage() {
                             {loading ? (
                                 <span className="flex items-center justify-center gap-2">
                                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                                    Iniciando sesión...
+                                    {isLogin ? "Iniciando sesión..." : "Registrando..."}
                                 </span>
                             ) : (
-                                "Iniciar Sesión"
+                                isLogin ? "Iniciar Sesión" : "Crear Cuenta"
                             )}
                         </button>
                     </form>
+                    
+                    <div className="mt-6 text-center">
+                        <button
+                            onClick={() => setIsLogin(!isLogin)}
+                            className="text-sm text-gray-400 hover:text-white transition-colors"
+                        >
+                            {isLogin ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Footer */}
